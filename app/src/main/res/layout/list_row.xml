@@ -11,22 +11,29 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true">
 
-        <ImageView
-            android:id="@+id/pic"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_centerVertical="true"
-            app:srcCompat="@android:drawable/btn_star_big_off" />
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true">
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="match_parent"
+            android:layout_height="24dp" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:padding="25dp">
+
+            <ImageView
+                android:id="@+id/pic"
+                android:layout_width="140dp"
+                android:layout_height="119dp"
+                android:layout_centerVertical="true"
+                android:layout_weight="1"
+                app:srcCompat="@android:drawable/btn_star_big_off" />
 
             <TextView
                 android:id="@+id/title"

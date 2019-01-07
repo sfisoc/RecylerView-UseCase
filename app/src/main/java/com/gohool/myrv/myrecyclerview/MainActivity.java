@@ -1,12 +1,16 @@
 package com.gohool.myrv.myrecyclerview;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 
+import com.larvalabs.svgandroid.SVG;
+import com.larvalabs.svgandroid.SVGParser;
 import com.squareup.okhttp.Call;
 import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.OkHttpClient;
@@ -17,6 +21,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView reciclerView;
     private RecyclerView.Adapter adapter;
     private List<Country> countries;
+    private List<Drawable> imagesDrwable;
     private Context context;
 
     @Override
@@ -77,23 +83,12 @@ public class MainActivity extends AppCompatActivity {
 
                          final ArrayList<Country> jsonCountries = parseCountriesJSON(response.body().string());
 
-                        runOnUiThread(new Runnable() {
 
-                            @Override
-                            public void run() {
 
                                 // Stuff that updates the UI
-                                MainActivity.this.countries = jsonCountries;
+                        MainActivity.this.countries = jsonCountries;
 
-                                if(MainActivity.this.countries != null)
-                                {
-                                    adapter = new MyAdapter(context, MainActivity.this.countries);
-
-                                    reciclerView.setAdapter(adapter);
-                                }
-
-                            }
-                        });
+                        new DownloadImageTask().execute(MainActivity.this.countries);
 
 
 
@@ -140,5 +135,77 @@ public class MainActivity extends AppCompatActivity {
 
         return conutriesItems;
 
+    }
+
+    private class DownloadImageTask extends AsyncTask<List<Country>, Void, List<Drawable>> {
+
+        public DownloadImageTask() {
+        }
+
+        protected List<Drawable> doInBackground(List<Country >... urls) {
+
+            List<Country> coutryItems = urls[0];
+
+            List<Drawable> mIcon11 = new ArrayList<>();
+            try {
+                for (Country c: coutryItems
+                        ) {
+
+                    InputStream in = new java.net.URL(c.getFlag()).openStream();
+
+                    if(in != null)
+                    {
+                        SVG svg = SVGParser.getSVGFromInputStream(in);
+
+                        if(svg != null)
+                        {
+                            mIcon11.add(svg.createPictureDrawable());
+
+                        }
+                        else
+                        {
+                            Log.d(TAG,"Null SVG");
+                        }
+
+                        svg = null;
+                        
+
+                    }
+                    else
+                    {
+                        Log.d(TAG,"NULL INPUTSTREAM");
+                    }
+
+
+
+                }
+            } catch (Exception e) {
+                Log.e("Error", e.getMessage());
+                e.printStackTrace();
+            }
+            return mIcon11;
+        }
+
+        protected void onPostExecute(final List<Drawable> result) {
+
+            runOnUiThread(new Runnable() {
+
+                @Override
+                public void run() {
+
+                    // Stuff that updates the UI
+                    MainActivity.this.imagesDrwable = result;
+
+
+                    if(MainActivity.this.countries != null && MainActivity.this.imagesDrwable != null)
+                    {
+                        adapter = new MyAdapter(context, MainActivity.this.countries,MainActivity.this.imagesDrwable);
+
+                        reciclerView.setAdapter(adapter);
+                    }
+
+                }
+            });
+        }
     }
 }

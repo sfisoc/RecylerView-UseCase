@@ -1,7 +1,12 @@
 package Adapter;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,7 +15,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.gohool.myrv.myrecyclerview.R;
+import com.larvalabs.svgandroid.SVG;
+import com.larvalabs.svgandroid.SVGParser;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,10 +31,13 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
 
     private Context context;
     private List<Country> countries;
+    private List<Drawable> imagesDrwable;
+    private  boolean imagesLoaded = false;
 
-    public MyAdapter(Context context, List listItem) {
+    public MyAdapter(Context context, List listItem, List<Drawable> drawables) {
         this.context = context;
         this.countries = listItem;
+        this.imagesDrwable = drawables;
     }
 
     @Override
@@ -37,11 +51,26 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         Country country = countries.get(position);
+        Drawable d = imagesDrwable.get(position);
         holder.name.setText(country.getName());
         holder.description.setText("Capital: "+ country.getCapital()+" Region: "+ country.getRegion());
+
         /**
          * TODO add image icon
          */
+        try {
+            
+            if(d != null)
+            {
+                holder.pic.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+                holder.pic.setImageDrawable(d);
+            }
+
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
 
     }
 
