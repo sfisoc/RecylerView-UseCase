@@ -5,12 +5,14 @@ public class Country {
     private String flag;
     private String capital;
     private String region;
+    private  String code;
 
-    public Country(String name, String flag, String cap, String reg) {
+    public Country(String name, String flag, String cap, String reg, String code) {
         this.name = name;
         this.flag = flag;
         this.capital = cap;
         this.region = reg;
+        this.code = code;
     }
 
     public String getName() {
@@ -43,5 +45,13 @@ public class Country {
 
     public void setRegion(String region) {
         this.region = region;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
     }
 }

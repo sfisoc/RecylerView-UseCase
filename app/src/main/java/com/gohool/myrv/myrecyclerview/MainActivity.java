@@ -76,22 +76,21 @@ public class MainActivity extends AppCompatActivity {
                     if (!response.isSuccessful()) {
                         throw new IOException("Unexpected code " + response);
                     } else {
-                        // do something wih the result
-
-
-                       // upDateListView(parseCountriesJSON(response.body().string()));
 
                          final ArrayList<Country> jsonCountries = parseCountriesJSON(response.body().string());
 
-
-
-                                // Stuff that updates the UI
                         MainActivity.this.countries = jsonCountries;
 
-                        new DownloadImageTask().execute(MainActivity.this.countries);
-
-
-
+                        if(MainActivity.this.countries != null)
+                        {
+                            adapter = new MyAdapter(context, MainActivity.this.countries);
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        reciclerView.setAdapter(adapter);
+                                    }
+                                });
+                        }
                     }
                 }
 
@@ -117,12 +116,13 @@ public class MainActivity extends AppCompatActivity {
 
                 JSONObject c = contacts.getJSONObject(i);
 
+                String code = c.getString("alpha2Code");
                 String name = c.getString("name");
                 String capital = c.getString("capital");
                 String region = c.getString("region");
                 String flag = c.getString("flag");
 
-                Country pc = new Country(name,flag,capital,region);
+                Country pc = new Country(name,flag,capital,region,code);
 
                 conutriesItems.add(pc);
 
@@ -134,78 +134,5 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return conutriesItems;
-
-    }
-
-    private class DownloadImageTask extends AsyncTask<List<Country>, Void, List<Drawable>> {
-
-        public DownloadImageTask() {
-        }
-
-        protected List<Drawable> doInBackground(List<Country >... urls) {
-
-            List<Country> coutryItems = urls[0];
-
-            List<Drawable> mIcon11 = new ArrayList<>();
-            try {
-                for (Country c: coutryItems
-                        ) {
-
-                    InputStream in = new java.net.URL(c.getFlag()).openStream();
-
-                    if(in != null)
-                    {
-                        SVG svg = SVGParser.getSVGFromInputStream(in);
-
-                        if(svg != null)
-                        {
-                            mIcon11.add(svg.createPictureDrawable());
-
-                        }
-                        else
-                        {
-                            Log.d(TAG,"Null SVG");
-                        }
-
-                        svg = null;
-                        
-
-                    }
-                    else
-                    {
-                        Log.d(TAG,"NULL INPUTSTREAM");
-                    }
-
-
-
-                }
-            } catch (Exception e) {
-                Log.e("Error", e.getMessage());
-                e.printStackTrace();
-            }
-            return mIcon11;
-        }
-
-        protected void onPostExecute(final List<Drawable> result) {
-
-            runOnUiThread(new Runnable() {
-
-                @Override
-                public void run() {
-
-                    // Stuff that updates the UI
-                    MainActivity.this.imagesDrwable = result;
-
-
-                    if(MainActivity.this.countries != null && MainActivity.this.imagesDrwable != null)
-                    {
-                        adapter = new MyAdapter(context, MainActivity.this.countries,MainActivity.this.imagesDrwable);
-
-                        reciclerView.setAdapter(adapter);
-                    }
-
-                }
-            });
-        }
     }
 }

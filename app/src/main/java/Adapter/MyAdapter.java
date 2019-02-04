@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
+import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -17,6 +18,8 @@ import android.widget.Toast;
 import com.gohool.myrv.myrecyclerview.R;
 import com.larvalabs.svgandroid.SVG;
 import com.larvalabs.svgandroid.SVGParser;
+import com.squareup.picasso.MemoryPolicy;
+import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -31,13 +34,13 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
 
     private Context context;
     private List<Country> countries;
-    private List<Drawable> imagesDrwable;
-    private  boolean imagesLoaded = false;
+  static {
+    AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
+  }
 
-    public MyAdapter(Context context, List listItem, List<Drawable> drawables) {
+    public MyAdapter(Context context, List listItem ) {
         this.context = context;
         this.countries = listItem;
-        this.imagesDrwable = drawables;
     }
 
     @Override
@@ -51,20 +54,13 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         Country country = countries.get(position);
-        Drawable d = imagesDrwable.get(position);
         holder.name.setText(country.getName());
         holder.description.setText("Capital: "+ country.getCapital()+" Region: "+ country.getRegion());
 
-        /**
-         * TODO add image icon
-         */
         try {
-            
-            if(d != null)
-            {
-                holder.pic.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
-                holder.pic.setImageDrawable(d);
-            }
+            String flagUrl = "https://www.countryflags.io/"+country.getCode()+"/shiny/64.png";
+
+            Picasso.with(context).load(flagUrl).error(R.mipmap.ic_launcher).memoryPolicy(MemoryPolicy.NO_CACHE).into(holder.pic);
 
         }
         catch (Exception e)
